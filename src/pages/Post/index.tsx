@@ -1,116 +1,103 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import {
     ArrowSquareUpRight,
     Calendar,
     CaretLeft,
-    ChatsTeardrop,
     GithubLogo,
 } from "phosphor-react";
 import { PostContent, PostCover } from "./styles";
 import { api } from "../../lib/axios";
 import { daysBetweenDates } from "../../utils/formatter";
 
-type PostInfoType = {
+type RepoInfoType = {
     html_url: string;
-    title: string;
-    user: any;
-    comments: number;
+    name: string;
+    owner: {
+        login: string;
+    };
     created_at: string;
-    body: string;
+    description: string;
 };
 
 export function Post() {
-    const [content, setContent] = useState<PostInfoType>();
+    const [repo, setRepo] = useState<RepoInfoType | null>(null);
     const { id } = useParams();
 
-    async function fetchIssue(id?: string) {
-        if (!id) {
-            return;
-        }
+    async function fetchRepo(repoId?: string) {
+        if (!repoId) return;
 
-        const response = await api.get(
-            `/repos/crisleyhguimaraes/github-blog-challenge/issues/${id}`
-        );
-        if (response.data.message) {
-            return;
-        } else {
-            const { html_url, title, user, comments, created_at, body } =
+        try {
+            const response = await api.get(
+                `/repos/crisleyhguimaraes/${repoId}`
+            );
+            const { html_url, name, owner, created_at, description } =
                 response.data;
-            const data = { html_url, title, user, comments, created_at, body };
-            setContent(data);
+            setRepo({ html_url, name, owner, created_at, description });
+        } catch (error) {
+            console.error("Error fetching repository:", error);
         }
     }
 
     useEffect(() => {
-        fetchIssue(id);
-    }, []);
+        fetchRepo(id);
+    }, [id]);
 
-    if (!content) {
+    if (!repo) {
         return (
             <PostCover>
-                <h2>Not Fount</h2>
+                <h2>Not Found</h2>
             </PostCover>
         );
-    } else {
-        return (
-            <>
-                <PostCover>
-                    <div className="post-header">
-                        <a href="/">
-                            <CaretLeft
-                                size={18}
-                                weight="bold"
-                                className="profile-info-label"
-                            />
-                            voltar
-                        </a>
-                        <a href={content.html_url}>
-                            ver no github
-                            <ArrowSquareUpRight size={18} weight="bold" />
-                        </a>
-                    </div>
-
-                    <h1>{content.title}</h1>
-
-                    <ul className="info">
-                        <li>
-                            <GithubLogo
-                                size={18}
-                                weight="bold"
-                                className="post-info"
-                            />{" "}
-                            {content.user.login}
-                        </li>
-                        <li>
-                            <Calendar
-                                size={18}
-                                weight="bold"
-                                className="post-info"
-                            />{" "}
-                            Há {daysBetweenDates(content.created_at)} dia(s)
-                        </li>
-                        <li>
-                            <ChatsTeardrop
-                                size={18}
-                                weight="bold"
-                                className="post-info"
-                            />{" "}
-                            {content.comments} comentários
-                        </li>
-                    </ul>
-                </PostCover>
-
-                <PostContent>
-                    <p>
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                            {content.body}
-                        </ReactMarkdown>
-                    </p>
-                </PostContent>
-            </>
-        );
     }
+
+    return (
+        <>
+            <PostCover>
+                <div className="post-header">
+                    <a href="/">
+                        <CaretLeft
+                            size={18}
+                            weight="bold"
+                            className="profile-info-label"
+                        />
+                        voltar
+                    </a>
+                    <a
+                        href={repo.html_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        ver no github
+                        <ArrowSquareUpRight size={18} weight="bold" />
+                    </a>
+                </div>
+
+                <h1>{repo.name}</h1>
+
+                <ul className="info">
+                    <li>
+                        <GithubLogo
+                            size={18}
+                            weight="bold"
+                            className="post-info"
+                        />{" "}
+                        {repo.owner.login}
+                    </li>
+                    <li>
+                        <Calendar
+                            size={18}
+                            weight="bold"
+                            className="post-info"
+                        />{" "}
+                        Criado há {daysBetweenDates(repo.created_at)} dia(s)
+                    </li>
+                </ul>
+            </PostCover>
+
+            <PostContent>
+                <p>{repo.description}</p>
+            </PostContent>
+        </>
+    );
 }

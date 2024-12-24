@@ -1,7 +1,7 @@
 import {
     ArrowSquareUpRight,
     GithubLogo,
-    HouseLine,
+    InstagramLogo,
     Users,
 } from "phosphor-react";
 import { Cards, Profile } from "./styles";
@@ -40,9 +40,11 @@ export function Home() {
                         </a>
                     </div>
                     <p>
-                        Tristique volutpat pulvinar vel massa, pellentesque
-                        egestas. Eu viverra massa quam dignissim aenean
-                        malesuada suscipit. Nunc, volutpat pulvinar vel mass.
+                        Um projeto que consome todos os repositórios de um
+                        usuário ou organização no GitHub, transformando-os em
+                        posts dinâmicos para um blog. Ideal para compartilhar
+                        projetos, documentações e atualizações de forma prática
+                        e automatizada. 🚀
                     </p>
                     <ul className="info">
                         <li>
@@ -54,12 +56,12 @@ export function Home() {
                             {dataProfile.login}
                         </li>
                         <li>
-                            <HouseLine
+                            <InstagramLogo
                                 size={18}
                                 weight="bold"
                                 className="profile-info-label"
                             />{" "}
-                            Rocketseat
+                            @crisleyhguimaraes
                         </li>
                         <li>
                             <Users
@@ -85,5 +87,3 @@ export function Home() {
         </>
     );
 }
-
-// 0: Object { url: "https://api.github.com/repos/crisleyhguimaraes/github-blog-challenge/issues/5", title: "Me explique o hook useCallback do React", created_at: "2022-12-10T13:35:42Z", … }

@@ -1,4 +1,4 @@
-import { createGlobalStyle } from 'styled-components';
+import { createGlobalStyle } from "styled-components";
 
 export const GlobalStyle = createGlobalStyle`
   * {
@@ -12,13 +12,13 @@ export const GlobalStyle = createGlobalStyle`
     }
 
     body {
-        background-color: ${(props) => props.theme['base-background']};
+        background-color: ${(props) => props.theme["base-background"]};
         -webkit-font-smoothing: antialiased;
     }
 
     body, input, textarea, button {
-      font-family: 'Nunito', sans-serif;
+      font-family: 'Ubuntu', sans-serif;
       font-weight: 400;
       font-size: 1rem;
     }
-`
+`;

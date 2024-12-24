@@ -19,23 +19,36 @@ type BlogContextProviderProps = {
     children: ReactNode;
 };
 
-export const BlogContext = createContext({} as BlogContextType);
+export const BlogContext = createContext<BlogContextType>(
+    {} as BlogContextType
+);
 
 export function BlogContextProvider({ children }: BlogContextProviderProps) {
     const [content, setContent] = useState<PostType[]>([]);
 
-    async function fetchIssues(query?: string) {
-        if (!query) {
-            query = "";
+    async function fetchIssues(query: string = "") {
+        try {
+            const encodedQuery = encodeURIComponent(query);
+            const response = await api.get(
+                `/search/issues?q=${encodedQuery}%20repo:crisleyhguimaraes/github-blog`
+            );
+
+            const data = response.data.items.map((issue: any): PostType => {
+                const {
+                    html_url: url,
+                    number,
+                    title,
+                    id,
+                    created_at,
+                    body,
+                } = issue;
+                return { url, number, title, id, created_at, body };
+            });
+
+            setContent(data);
+        } catch (error) {
+            console.error("Failed to fetch issues:", error);
         }
-        const response = await api.get(
-            `/search/issues?q=${query}%20repo:crisleyhguimaraes/github-blog-challenge`
-        );
-        const data = response.data.items.map((issue: any) => {
-            const { url, number, title, id, created_at, body } = issue;
-            return { url, number, title, id, created_at, body };
-        });
-        setContent(data);
     }
 
     useEffect(() => {
